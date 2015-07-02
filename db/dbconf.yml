@@ -1,0 +1,5 @@
+development:
+  driver: mysql
+  open: zeus:omgworked@tcp(localhost:3306)/taskdb
+  import: github.com/go-sql-driver/mysql
+  dialect: mysql

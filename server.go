@@ -35,20 +35,34 @@ func main() {
 	router := web.New(Context{})
 	router.Middleware((*Context).AuthorizationMiddleware)
 	router.Middleware(web.LoggerMiddleware)
-	router.Get("/", (*Context).Root)
+	router.Post("/todo/new", (*Context).SaveTask)
+	router.Get("/todo/show/:id", (*Context).GetTask)
+	router.Put("/todo/edit/:id", (*Context).UpdateTask)
+	router.Delete("/todo/delete/:id", (*Context).DeleteTask)
 	http.ListenAndServe("localhost:3000", router)
-
 }
 
-func (c *Context) Root(rw web.ResponseWriter, req *web.Request) {
+func (c *Context) GetTask(rw web.ResponseWriter, req *web.Request) {
 	fmt.Fprint(rw, "Hello")
 }
 
-// TODO: Add Comments, remove duplicated code
+func (c *Context) SaveTask(rw web.ResponseWriter, req *web.Request) {
+	fmt.Fprint(rw, "Hello")
+}
+
+func (c *Context) UpdateTask(rw web.ResponseWriter, req *web.Request) {
+	fmt.Fprint(rw, "Hello")
+}
+
+func (c *Context) DeleteTask(rw web.ResponseWriter, req *web.Request) {
+	fmt.Fprint(rw, "Hello")
+}
+
+//AuthorizationMiddleware gets the Authorization header and verify if is valid
 func (c *Context) AuthorizationMiddleware(rw web.ResponseWriter, r *web.Request, next web.NextMiddlewareFunc) {
-	auth_array := r.Header["Authorization"]
-	if len(auth_array) > 0 {
-		authorization := strings.TrimSpace(auth_array[0])
+	authArray := r.Header["Authorization"]
+	if len(authArray) > 0 {
+		authorization := strings.TrimSpace(authArray[0])
 		content := strings.Split(authorization, " ")
 		if len(content) > 1 {
 			method := content[0]

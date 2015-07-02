@@ -3,8 +3,6 @@ package db
 import (
 
 	//Imports the mysql driver
-	"errors"
-	"log"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
@@ -101,7 +99,7 @@ func (m *TaskManager) Delete(id int) (err error) {
 	return
 }
 
-//Validator
+// Validator
 
 // func (m *TaskManager) validate(task *Task) (errs []error) {
 //
