@@ -3,19 +3,23 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gocraft/web"
+	"github.com/raphaeljlps/raphael-assignment/db"
 )
 
-var settings struct {
-	ListenAddress string `json:"listenAddress"`
-	DatabaseUri   string `json:"databaseUri"`
-}
+var (
+	settings struct {
+		ListenAddress string `json:"listenAddress"`
+		DatabaseUri   string `json:"databaseUri"`
+	}
 
-type Context struct {
-}
+	man db.TaskManager
+)
 
 func main() {
 	var configPath string
@@ -32,6 +36,13 @@ func main() {
 	// 	log.Fatal("parse config file failed")
 	// }
 
+	dbmap, err := db.InitDB("zeus:omgworked@tcp(localhost:3306)/taskdb") //read from config.json
+	if err != nil {
+		log.Fatal("db connection failed")
+	}
+
+	man = db.NewTaskManager(dbmap)
+
 	router := web.New(Context{})
 	router.Middleware((*Context).AuthorizationMiddleware)
 	router.Middleware(web.LoggerMiddleware)
@@ -42,8 +53,34 @@ func main() {
 	http.ListenAndServe("localhost:3000", router)
 }
 
+//Context is the application context.
+type Context struct {
+}
+
 func (c *Context) GetTask(rw web.ResponseWriter, req *web.Request) {
-	fmt.Fprint(rw, "Hello")
+	// // gorm, _ := db.InitDB("zeus:omgworked@tcp(localhost:3306)/taskdb")
+	// // m := dbdb.NewTaskManager(gorm)
+	// // task := db.Task{Id: 0, Title: "Hello", Description: "desc", Priority: 10, CreatedAt: 1231231, UpdatedAt: 12312411, CompletedAt: 1231231, IsDeleted: false, IsCompleted: false}
+	//
+	// // err := m.Create(&task)
+	// // log.Println(err)
+
+	idParam := req.PathParams["id"]
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		rw.WriteHeader(http.StatusBadRequest)
+		fmt.Fprint(rw, "Missing id param")
+		return
+	}
+
+	task, err := man.Get(id)
+	if err != nil {
+		rw.WriteHeader(http.StatusNotFound)
+		fmt.Fprint(rw, "Task not found")
+	}
+
+	fmt.Fprintf(rw, "Task %d - %s\n", task.Id, task.Title)
+
 }
 
 func (c *Context) SaveTask(rw web.ResponseWriter, req *web.Request) {

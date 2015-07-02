@@ -4,6 +4,9 @@ import (
 
 	//Imports the mysql driver
 
+	"errors"
+	"log"
+
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 )
@@ -36,7 +39,7 @@ type Task struct {
 	Priority    int
 	CreatedAt   int64
 	UpdatedAt   int64
-	CompletedAt bool
+	CompletedAt int64
 	IsDeleted   bool
 	IsCompleted bool
 }
