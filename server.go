@@ -33,6 +33,7 @@ func main() {
 
 	router := web.New(Context{})
 	router.Middleware((*Context).AuthorizationMiddleware)
+	router.Middleware(web.LoggerMiddleware)
 	router.Get("/", (*Context).Root)
 	http.ListenAndServe("localhost:3000", router)
 
