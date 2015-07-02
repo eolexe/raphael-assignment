@@ -1,5 +1,5 @@
 # raphael-assignment
-Small golang assignment for raphael
+Small golang assignment for raphael - please use this repo to commit all of your work
 
 ###Create HTTP Rest API:
 1. Use Gocraft for web handler 
