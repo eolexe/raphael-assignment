@@ -20,6 +20,7 @@ type Context struct {
 func main() {
 	var configPath string
 	flag.StringVar(&configPath, "path", "config.json", "json config path")
+
 	// configFile, err := os.Open(configPath)
 	// if err != nil {
 	// 	//Fatal because if this fail, we can proceed, so exit!
