@@ -38,6 +38,7 @@ func init() {
 	if err = decoder.Decode(&settings); err != nil {
 		log.Fatalf("parse config file failed %s", err)
 	}
+	configFile.Close()
 
 	dbmap, err := db.InitDB(settings.DatabaseUri)
 	if err != nil {
@@ -48,6 +49,7 @@ func init() {
 }
 
 func main() {
+	defer man.Close()
 
 	router := web.New(Context{})
 	router.Middleware((*Context).AuthorizationMiddleware)

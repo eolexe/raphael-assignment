@@ -53,6 +53,10 @@ func NewTaskManager(db *gorm.DB) TaskManager {
 	return TaskManager{Db: db}
 }
 
+func (m *TaskManager) Close() error {
+	return m.Db.Close()
+}
+
 func (m *TaskManager) All() []Task {
 	var tasks []Task
 	if err := m.Db.Find(&tasks).Error; err != nil {
