@@ -13,7 +13,7 @@ Small golang assignment for raphael - please use this repo to commit all of your
 9. Implement delete endpoint for Task object (just update IsDeleted field)  (DONE)
 10. Use CORS (reply with header Access-Control-Allow-Origin: *) (DONE)
 11. Add support for OPTION HTTP method for each endpoints  (DONE)
-12. Configure daemon over simple JSON config. Specify path as process flag for daemon. Required params: ListenAddress, DatabaseUri.
+12. Configure daemon over simple JSON config. Specify path as process flag for daemon. Required params: ListenAddress, DatabaseUri. (DONE)
 
 
 ###Task:
@@ -30,3 +30,7 @@ type Task struct {
     IsCompleted bool
 }
 ```
+
+Comments: 
+
+All db related structs/functions are in the db.go file, because, this was a single entity api, otherwise, I would have split the connection related functions in a connection.go and the domain files in their respective folders, together with the Managers and Handlers for that endpoint.
