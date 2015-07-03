@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
@@ -26,18 +27,18 @@ func main() {
 	var configPath string
 	flag.StringVar(&configPath, "path", "config.json", "json config path")
 
-	// configFile, err := os.Open(configPath)
-	// if err != nil {
-	// 	//Fatal because if this fail, we can proceed, so exit!
-	// 	log.Fatal("fail to read config file")
-	// }
-	//
-	// decoder := json.NewDecoder(configFile)
-	// if err = decoder.Decode(settings); err != nil {
-	// 	log.Fatal("parse config file failed")
-	// }
+	configFile, err := os.Open(configPath)
+	if err != nil {
+		//Fatal because if this fail, we can proceed, so exit!
+		log.Fatalf("fail to read config file %s", err)
+	}
 
-	dbmap, err := db.InitDB("zeus:omgworked@tcp(localhost:3306)/taskdb") //read from config.json
+	decoder := json.NewDecoder(configFile)
+	if err = decoder.Decode(&settings); err != nil {
+		log.Fatalf("parse config file failed %s", err)
+	}
+
+	dbmap, err := db.InitDB(settings.DatabaseUri)
 	if err != nil {
 		log.Fatal("db connection failed")
 	}
@@ -53,7 +54,7 @@ func main() {
 	router.Put("/todo/:id", (*Context).UpdateTask)
 	router.Delete("/todo/:id", (*Context).DeleteTask)
 	router.NotFound((*Context).NotFound)
-	http.ListenAndServe("localhost:3000", router)
+	http.ListenAndServe(settings.ListenAddress, router)
 }
 
 //Context is the application context.

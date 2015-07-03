@@ -1,0 +1,4 @@
+{
+  "listenAddress": "localhost:3000",
+  "databaseUri":"zeus:omgworked@tcp(localhost:3306)/taskdb"
+}
