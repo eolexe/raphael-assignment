@@ -6,6 +6,7 @@ import (
 
 	"errors"
 	"log"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
@@ -73,6 +74,10 @@ func (m *TaskManager) Create(task *Task) (errs []error) {
 	// 	return
 	// }
 
+	now := time.Now().UnixNano()
+	task.CreatedAt = now
+	task.UpdatedAt = now
+
 	m.Db.Create(task)
 	return
 }
@@ -82,6 +87,9 @@ func (m *TaskManager) Update(task *Task) (errs []error) {
 	if task.Id <= 0 {
 		errs = append(errs, errors.New("Invalid id"))
 	}
+
+	now := time.Now().UnixNano()
+	task.UpdatedAt = now
 
 	var taskModel Task
 	errs = append(errs, m.Db.Model(&taskModel).Updates(task).Error)

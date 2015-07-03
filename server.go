@@ -46,6 +46,7 @@ func main() {
 
 	router := web.New(Context{})
 	router.Middleware((*Context).AuthorizationMiddleware)
+	router.Middleware((*Context).CorsMiddleware)
 	router.Middleware(web.LoggerMiddleware)
 	router.Get("/todo/:id", (*Context).GetTask)
 	router.Post("/todo", (*Context).SaveTask)
@@ -86,11 +87,31 @@ func (c *Context) GetTask(rw web.ResponseWriter, req *web.Request) {
 }
 
 func (c *Context) SaveTask(rw web.ResponseWriter, req *web.Request) {
-	fmt.Fprint(rw, "Hello")
+	var task db.Task
+
+	decoder := json.NewDecoder(req.Body)
+	if decoder != nil {
+		if err := decoder.Decode(&task); err == nil {
+			man.Create(&task)
+			rw.WriteHeader(http.StatusOK)
+		} else {
+			fmt.Fprint(rw, jsonError("trying decode, but "+err.Error()))
+		}
+	}
 }
 
 func (c *Context) UpdateTask(rw web.ResponseWriter, req *web.Request) {
-	fmt.Fprint(rw, "Hello")
+	var task db.Task
+
+	decoder := json.NewDecoder(req.Body)
+	if decoder != nil {
+		if err := decoder.Decode(&task); err == nil {
+			man.Update(&task)
+			rw.WriteHeader(http.StatusOK)
+		} else {
+			fmt.Fprint(rw, jsonError("trying decode, but "+err.Error()))
+		}
+	}
 }
 
 func (c *Context) DeleteTask(rw web.ResponseWriter, req *web.Request) {
@@ -142,6 +163,16 @@ func (c *Context) AuthorizationMiddleware(rw web.ResponseWriter, r *web.Request,
 		rw.WriteHeader(http.StatusForbidden)
 		fmt.Fprint(rw, jsonError("missing authorization header"))
 	}
+}
+
+func (c *Context) CorsMiddleware(rw web.ResponseWriter, r *web.Request,
+	next web.NextMiddlewareFunc) {
+	if r.Method != "OPTIONS" {
+		next(rw, r)
+		return
+	}
+
+	rw.Header().Set("Access-Control-Allow-Origin", "*")
 }
 
 //Utility
