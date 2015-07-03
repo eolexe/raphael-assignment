@@ -23,9 +23,10 @@ var (
 	man db.TaskManager
 )
 
-func main() {
+func init() {
 	var configPath string
 	flag.StringVar(&configPath, "path", "config.json", "json config path")
+	flag.Parse()
 
 	configFile, err := os.Open(configPath)
 	if err != nil {
@@ -44,6 +45,9 @@ func main() {
 	}
 
 	man = db.NewTaskManager(dbmap)
+}
+
+func main() {
 
 	router := web.New(Context{})
 	router.Middleware((*Context).AuthorizationMiddleware)
@@ -57,10 +61,11 @@ func main() {
 	http.ListenAndServe(settings.ListenAddress, router)
 }
 
-//Context is the application context.
+//Context is the application context, not usu.
 type Context struct {
 }
 
+//GetTask handles the endpoint GET /todo/1
 func (c *Context) GetTask(rw web.ResponseWriter, req *web.Request) {
 	id, err := idFromParam(req)
 	if err != nil {
@@ -87,6 +92,7 @@ func (c *Context) GetTask(rw web.ResponseWriter, req *web.Request) {
 	fmt.Fprint(rw, string(jsonTask))
 }
 
+//SaveTask handles the endpoint POST /todo
 func (c *Context) SaveTask(rw web.ResponseWriter, req *web.Request) {
 	var task db.Task
 
@@ -101,6 +107,7 @@ func (c *Context) SaveTask(rw web.ResponseWriter, req *web.Request) {
 	}
 }
 
+//UpdateTask handles the endpoint PUT /todo/1
 func (c *Context) UpdateTask(rw web.ResponseWriter, req *web.Request) {
 	var task db.Task
 
@@ -115,6 +122,7 @@ func (c *Context) UpdateTask(rw web.ResponseWriter, req *web.Request) {
 	}
 }
 
+//DeleteTask handles the endpoint DELETE /todo/1
 func (c *Context) DeleteTask(rw web.ResponseWriter, req *web.Request) {
 	id, err := idFromParam(req)
 	if err != nil {
@@ -133,9 +141,10 @@ func (c *Context) DeleteTask(rw web.ResponseWriter, req *web.Request) {
 	rw.WriteHeader(http.StatusNoContent)
 }
 
+//NotFound is the default handler for not found url.
 func (c *Context) NotFound(rw web.ResponseWriter, req *web.Request) {
 	rw.WriteHeader(http.StatusNotFound)
-	fmt.Fprint(rw, jsonError("resource not found"))
+	fmt.Fprint(rw, jsonError("url not found"))
 
 }
 
@@ -166,6 +175,7 @@ func (c *Context) AuthorizationMiddleware(rw web.ResponseWriter, r *web.Request,
 	}
 }
 
+//CorsMiddleware add the header Access-Control-Allow-Origin to the OPTIONS req.
 func (c *Context) CorsMiddleware(rw web.ResponseWriter, r *web.Request,
 	next web.NextMiddlewareFunc) {
 	if r.Method != "OPTIONS" {
