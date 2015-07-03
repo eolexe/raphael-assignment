@@ -33,4 +33,4 @@ type Task struct {
 
 Comments: 
 
-All db related structs/functions are in the db.go file, because, this was a single entity api, otherwise, I would have split the connection related functions in a connection.go and the domain files in their respective folders, together with the Managers and Handlers for that endpoint.
+All db related structs/functions are in the db.go file, because, this was a single entity api, otherwise, I would have split the connection related functions in a connection.go and the domain files in their respective folders, together with the Managers and Handlers for that endpoint. Thats why all the handlers are in the main package, as well with the middleware and utilities functions. 
